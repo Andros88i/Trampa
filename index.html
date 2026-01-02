@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Matrix Digital Rain | Andro_0s</title>
+    <style>
+        html, body { 
+          margin: 0; 
+          padding: 0;
+          background: #000; 
+          font-family: 'Courier New', Courier, monospace;
+          scrollbar-width: none; 
+        }
+        body::-webkit-scrollbar { display: none; }
+
+        body { 
+          display: flex; 
+          flex-direction: column;
+          align-items: center; 
+          min-height: 100vh;
+        }
+
+        /* Lluvia fija de fondo */
+        main {
+          display: flex;
+          position: fixed; 
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+          pointer-events: none;
+        }
+        
+        /* CONTENEDOR CENTRAL */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 900px;
+            padding: 10px 0 40px 0; /* Casi nada de espacio arriba (10px) */
+        }
+
+        /* TÍTULO ANDRO_0S (Al ras de arriba) */
+        .main-title {
+            color: #00FF41;
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-top: 0; /* Eliminamos margen superior */
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 12px;
+            text-shadow: 0 0 15px #00FF41;
+            animation: flicker 2s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.7; }
+        }
+
+        /* CONTENEDOR DEL VIDEO */
+        .video-container {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00FF41;
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* REJILLA DE FOTOS */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            width: 100%;
+        }
+
+        .photo-box {
+            aspect-ratio: 1 / 1;
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid #00FF41;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00FF41;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            box-shadow: inset 0 0 8px rgba(0, 255, 65, 0.2);
+            transition: all 0.3s;
+        }
+
+        .photo-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 255, 65, 0.4);
+            background: rgba(0, 255, 65, 0.15);
+        }
+
+        /* Estilos de la lluvia */
+        p { line-height: 1; margin: 0; }
+        span {
+          display: block;
+          width: 2vmax; 
+          height: 2vmax; 
+          font-size: 2vmax; 
+          color: #9bff9b11;
+          text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <main id="matrix-container"></main>
+
+    <div class="content-wrapper">
+        <h1 class="main-title">Andro_0s</h1>
+        
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+        </div>
+
+        <div class="photo-grid">
+            <div class="photo-box"><span>[ Foto 1 ]</span></div>
+            <div class="photo-box"><span>[ Foto 2 ]</span></div>
+            <div class="photo-box"><span>[ Foto 3 ]</span></div>
+            <div class="photo-box"><span>[ Foto 4 ]</span></div>
+            <div class="photo-box"><span>[ Foto 5 ]</span></div>
+            <div class="photo-box"><span>[ Foto 6 ]</span></div>
+        </div>
+    </div>
+
+    <script>
+        function r(from, to) { return ~~(Math.random() * (to - from + 1) + from); }
+        function pick() { return arguments[r(0, arguments.length - 1)]; }
+        function getChar() { return String.fromCharCode(pick(r(0x3041, 0x30ff), r(0x2000, 0x206f), r(0x0020, 0x003f))); }
+        function loop(fn, delay) {
+            let stamp = Date.now();
+            function _loop() {
+                if (Date.now() - stamp >= delay) { fn(); stamp = Date.now(); }
+                requestAnimationFrame(_loop);
+            }
+            requestAnimationFrame(_loop);
+        }
+        class Char { constructor() { this.element = document.createElement('span'); this.mutate(); } mutate() { this.element.textContent = getChar(); } }
+        class Trail {
+            constructor(list = [], options) {
+                this.list = list;
+                this.options = Object.assign({ size: 10, offset: 0 }, options);
+                this.body = [];
+                this.move();
+            }
+            traverse(fn) { this.body.forEach((n, i) => { let last = (i == this.body.length - 1); if (n) fn(n, i, last); }); }
+            move() {
+                this.body = [];
+                let { offset, size } = this.options;
+                for (let i = 0; i < size; ++i) { let item = this.list[offset + i - size + 1]; this.body.push(item); }
+                this.options.offset = (offset + 1) % (this.list.length + size - 1);
+            }
+        }
+        class Rain {
+            constructor({ target, row }) { this.element = document.createElement('p'); this.build(row); if (target) target.appendChild(this.element); this.drop(); }
+            build(row = 20) {
+                let root = document.createDocumentFragment();
+                let chars = [];
+                for (let i = 0; i < row; ++i) {
+                    let c = new Char(); root.appendChild(c.element); chars.push(c);
+                    if (Math.random() < .5) loop(() => c.mutate(), r(1e3, 5e3));
+                }
+                this.trail = new Trail(chars, { size: r(10, 30), offset: r(0, 100) });
+                this.element.appendChild(root); 
+            }
+            drop() {
+                let trail = this.trail;
+                let len = trail.body.length;
+                let delay = r(10, 100);
+                loop(() => {
+                    trail.move();
+                    trail.traverse((c, i, last) => {
+                        c.element.style.color = `hsla(136, 100%, ${85 / len * (i + 1)}%, ${1 / len * (i + 1)})`;
+                        if (last) { c.mutate(); c.element.style.color = `hsl(136, 100%, 85%)`; c.element.style.textShadow = `0 0 .5em #fff, 0 0 .5em currentColor`; }
+                        else { c.element.style.textShadow = 'none'; }
+                    });
+                }, delay);
+            }
+        }
+        window.onload = () => {
+            const main = document.getElementById('matrix-container');
+            const columns = Math.floor(window.innerWidth / (window.innerWidth * 0.025)); 
+            for (let i = 0; i < columns; ++i) { new Rain({ target: main, row: 50 }); }
+        };
+    </script>
+</body>
+</html>
