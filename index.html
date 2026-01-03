@@ -52,7 +52,7 @@
             margin-bottom: 30px;
         }
 
-        video { width: 100%; height: 100%; object-fit: cover; }
+        video { width: 100%; height: 100%; object-fit: contain; background: #000; }
 
         /* REJILLA DE VIDEOS */
         .photo-grid {
@@ -61,7 +61,7 @@
         }
 
         .photo-box {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             border: 1px solid #00FF41; 
             border-radius: 8px;
             overflow: hidden;
@@ -69,16 +69,18 @@
             transition: all 0.3s;
             display: flex;
             flex-direction: column;
+            height: auto; /* Adaptable */
         }
 
         .photo-box video {
             width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
+            height: auto; /* Adaptable a la forma del video */
+            object-fit: contain;
             opacity: 0.9;
+            background: #000;
         }
 
-        /* BARRA DE EMOTES 🥰 😈 🤤 🍑 🍼 */
+        /* BARRA DE EMOTES Y CONTADOR */
         .reaction-bar {
             display: flex;
             justify-content: space-around;
@@ -91,13 +93,51 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1rem;
+            color: #00FF41;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             transition: transform 0.2s;
         }
 
-        .emote:hover { transform: scale(1.3); }
+        .emote:hover { transform: scale(1.2); }
+        .count { font-size: 0.7rem; margin-top: 2px; color: #00FF41; }
 
-        span { display: block; width: 2vmax; height: 2vmax; font-size: 2vmax; color: #9bff9b11; text-align: center; }
+        /* SECCIÓN DE COMENTARIOS */
+        .comment-section {
+            padding: 10px;
+            border-top: 1px solid #00FF41;
+            font-size: 0.8rem;
+        }
+        .comment-list {
+            max-height: 60px;
+            overflow-y: auto;
+            color: #00FF41;
+            margin-bottom: 5px;
+            scrollbar-width: thin;
+        }
+        .input-group { display: flex; gap: 5px; }
+        .comment-input {
+            flex: 1;
+            background: #000;
+            border: 1px solid #00FF41;
+            color: #00FF41;
+            padding: 5px;
+            font-family: inherit;
+        }
+        .comment-btn {
+            background: #00FF41;
+            color: #000;
+            border: none;
+            padding: 0 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Ajuste de visibilidad de emojis del fondo y botones */
+        .emote span { width: auto; height: auto; font-size: 1.2rem; color: #fff; opacity: 1; }
+        #matrix-container span { display: block; width: 2vmax; height: 2vmax; font-size: 2vmax; color: rgba(155, 255, 155, 0.1); text-align: center; }
         p { line-height: 1; margin: 0; }
     </style>
 </head>
@@ -118,26 +158,79 @@
             <div class="photo-box">
                 <video controls><source src="video_descargado(4).mp4" type="video/mp4"></video>
                 <div class="reaction-bar">
-                    <button class="emote">🥰</button><button class="emote">😈</button><button class="emote">🤤</button><button class="emote">🍑</button><button class="emote">🍼</button>
+                    <button class="emote" onclick="react(this)"><span>🥰</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>😈</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>🤤</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>🍑</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>🍼</span><i class="count">0</i></button>
+                </div>
+                <div class="comment-section">
+                    <div class="comment-list"></div>
+                    <div class="input-group">
+                        <input type="text" class="comment-input" placeholder="Comentar..." onkeydown="if(event.key==='Enter') addComment(this)">
+                        <button class="comment-btn" onclick="addComment(this)">OK</button>
+                    </div>
                 </div>
             </div>
+
             <div class="photo-box">
                 <video controls><source src="./0i1mmntf90u86lcj715ty_source.mp4" type="video/mp4"></video>
                 <div class="reaction-bar">
-                    <button class="emote">🥰</button><button class="emote">😈</button><button class="emote">🤤</button><button class="emote">🍑</button><button class="emote">🍼</button>
+                    <button class="emote" onclick="react(this)"><span>🥰</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>😈</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>🤤</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>🍑</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>🍼</span><i class="count">0</i></button>
+                </div>
+                <div class="comment-section">
+                    <div class="comment-list"></div>
+                    <div class="input-group">
+                        <input type="text" class="comment-input" placeholder="Comentar..." onkeydown="if(event.key==='Enter') addComment(this)">
+                        <button class="comment-btn" onclick="addComment(this)">OK</button>
+                    </div>
                 </div>
             </div>
+
             <div class="photo-box">
                 <video controls><source src="./video3.mp4" type="video/mp4"></video>
                 <div class="reaction-bar">
-                    <button class="emote">🥰</button><button class="emote">😈</button><button class="emote">🤤</button><button class="emote">🍑</button><button class="emote">🍼</button>
+                    <button class="emote" onclick="react(this)"><span>🥰</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>😈</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>🤤</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>🍑</span><i class="count">0</i></button>
+                    <button class="emote" onclick="react(this)"><span>🍼</span><i class="count">0</i></button>
+                </div>
+                <div class="comment-section">
+                    <div class="comment-list"></div>
+                    <div class="input-group">
+                        <input type="text" class="comment-input" placeholder="Comentar..." onkeydown="if(event.key==='Enter') addComment(this)">
+                        <button class="comment-btn" onclick="addComment(this)">OK</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Lógica Matrix Rain
+        function react(btn) {
+            let countLabel = btn.querySelector('.count');
+            countLabel.innerText = parseInt(countLabel.innerText) + 1;
+        }
+
+        function addComment(element) {
+            let container = element.parentElement;
+            let input = container.querySelector('.comment-input');
+            if (input.value.trim() !== "") {
+                let list = container.parentElement.querySelector('.comment-list');
+                let newComment = document.createElement('div');
+                newComment.innerText = "> " + input.value;
+                list.appendChild(newComment);
+                input.value = "";
+                list.scrollTop = list.scrollHeight;
+            }
+        }
+
+        // Lógica Matrix Rain original
         function r(from, to) { return ~~(Math.random() * (to - from + 1) + from); }
         function pick() { return arguments[r(0, arguments.length - 1)]; }
         function getChar() { return String.fromCharCode(pick(r(0x3041, 0x30ff), r(0x2000, 0x206f), r(0x0020, 0x003f))); }
